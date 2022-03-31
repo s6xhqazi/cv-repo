@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="220" prefWidth="200" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="User">
+    <HBox prefHeight="114.0" prefWidth="200">
+        <Button fx:id="logIn" onAction="#getData" prefHeight="100" prefWidth="100" style="-fx-background-radius: 50%;      -fx-background-image: url(/Bilder/monkey.png);      -fx-background-size: 100%;      -fx-background-color: white;      -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 3, 3);">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor></Button>
+        <VBox minWidth="95.0" prefHeight="185.0" prefWidth="95.0" spacing="40">
+            <Button fx:id="edit" minHeight="30" onAction="#edit" prefWidth="30" style="-fx-background-radius: 50%;      -fx-background-image: url(/Bilder/edit.png);      -fx-background-size: 100%;      -fx-background-color: white;      -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 3, 3);" />
+            <Button fx:id="delete" minHeight="30" onAction="#delete" prefWidth="30" style="-fx-background-radius: 50%;      -fx-background-image: url(/Bilder/delete.png);      -fx-background-size: 100%;      -fx-background-color: white;      -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 3, 3);" />
+        </VBox>
+    </HBox>
+    <Label fx:id="username" alignment="CENTER" text="username" textAlignment="CENTER">
+      <VBox.margin>
+         <Insets left="25.0" />
+      </VBox.margin></Label>
+</VBox>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox prefHeight="473.0" prefWidth="604.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FolderSelect">
+   <children>
+      <VBox alignment="TOP_CENTER" prefHeight="480.0" prefWidth="604.0" spacing="30.0">
+         <children>
+            <VBox alignment="TOP_CENTER" prefHeight="132.0" prefWidth="604.0">
+               <children>
+                  <Label alignment="BASELINE_CENTER" prefHeight="89.0" prefWidth="554.0" text="Bitte wählen Sie welcher Folder folgende Funktionen übernehmen soll." textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="Calibri Bold Italic" size="22.0" />
+                     </font>
+                  </Label>
+                  <Label prefHeight="33.0" prefWidth="346.0" text="(Wenn Sie nichts auswählen, wird bei Bedarf ein Folder erzeugt)" textFill="#e42020" />
+               </children>
+            </VBox>
+            <HBox alignment="TOP_CENTER" prefHeight="218.0" prefWidth="604.0" spacing="10.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" prefHeight="251.0" prefWidth="298.0" spacing="30.0">
+                     <children>
+                        <Label prefHeight="22.0" prefWidth="134.0" text="Entwürfe/Drafts">
+                           <font>
+                              <Font name="Calibri Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label text="Gelöschte Nachrichten">
+                           <font>
+                              <Font name="Calibri Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label text="Gesendet">
+                           <font>
+                              <Font name="Calibri Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label text="Spam">
+                           <font>
+                              <Font name="Calibri Bold" size="19.0" />
+                           </font>
+                        </Label>
+                        <Label text="Archive">
+                           <font>
+                              <Font name="Calibri Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label text="Outbox">
+                           <font>
+                              <Font name="Calibri Bold" size="18.0" />
+                           </font>
+                        </Label>
+                     </children></VBox>
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="300.0" spacing="30.0">
+                     <children>
+                        <ComboBox fx:id="draft" prefWidth="150.0" />
+                        <ComboBox fx:id="deleted" prefWidth="150.0" />
+                        <ComboBox fx:id="gesendet" prefWidth="150.0" />
+                        <ComboBox fx:id="spam" prefWidth="150.0" />
+                        <ComboBox fx:id="archive" prefWidth="150.0" />
+                        <ComboBox fx:id="outbox" prefWidth="150.0" />
+                     </children></VBox>
+               </children>
+            </HBox>
+            <Button fx:id="finish" mnemonicParsing="false" onAction="#setUp" prefHeight="40.0" prefWidth="99.0" text="Finish" textAlignment="CENTER" wrapText="true">
+               <VBox.margin>
+                  <Insets bottom="30.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</VBox>

@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.10'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+
+javafx {
+    version = "16"
+    modules = [ 'javafx.controls', 'javafx.fxml' , 'javafx.web']
+}
+mainClassName = 'Launcher'
+jar.setDuplicatesStrategy(DuplicatesStrategy.INHERIT)
+jar {
+    duplicatesStrategy = DuplicatesStrategy.INHERIT
+
+    manifest {
+        attributes "Main-Class": 'Launcher'
+    }
+
+    from {
+        exclude '**/module-info.class'
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }}
+}
+
+
+dependencies {
+    implementation group: 'org.controlsfx', name: 'controlsfx', version: '8.20.8'
+    implementation group: 'com.jfoenix', name: 'jfoenix', version: '9.0.1'
+    implementation 'com.sun.mail:jakarta.mail:1.6.4'
+    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'org.jsoup:jsoup:1.13.1'
+    implementation group: 'org.openjfx', name: 'javafx-web', version: '17-ea+14'
+    implementation 'org.jetbrains:annotations:20.1.0'
+}
+
+test {
+    useJUnitPlatform()
+}

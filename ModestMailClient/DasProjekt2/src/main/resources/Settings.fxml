@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="TOP_CENTER" prefHeight="418.0" prefWidth="600.0" spacing="30.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Settings">
+   <children>
+      <Label prefHeight="63.0" prefWidth="317.0" text="Herzlich Willkommen" textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font name="Calibri Bold Italic" size="36.0" />
+         </font>
+      </Label>
+      <Label text="Es wurden keine Daten von Ihnen gefunden. ">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label text="Bitte wählen Sie einen Folder um Ihre Daten speichern zu können." />
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+         <children>
+            <Label fx:id="folderLabel" text="Folder" />
+            <Button fx:id="folderButton" mnemonicParsing="false" onAction="#chooseDir" minWidth="30.0" minHeight="35.0" maxHeight="35.0" maxWidth="30.0" style=" -fx-background-image: url(/Bilder/folder.png); -fx-background-size: 100%;       -fx-background-color: transparent;      -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 3, 3);" />
+         </children>
+      </HBox>
+      <Label fx:id="foldermeldung" text="Sie haben noch keinen gültigen Folder gewählt." textFill="#ee2727" />
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
+         <children>
+            <Label text="   Passwort wählen   " />
+            <PasswordField fx:id="passwort1" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutX="10.0" layoutY="210.0" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
+         <children>
+            <Label text="Passwort bestätigen" />
+            <PasswordField fx:id="passwort2" />
+         </children>
+      </HBox>
+      <Label fx:id="meldung" prefHeight="36.0" prefWidth="510.0" text="Ihr Passwort muss mindestens 6 Zeichen lang sein. Die zwei Eingaben müssen übereinstimmen" textFill="#eb1a1a" wrapText="true" />
+      <Button fx:id="speichern" mnemonicParsing="false" onAction="#speichern" text="Speichern" />
+   </children>
+</VBox>

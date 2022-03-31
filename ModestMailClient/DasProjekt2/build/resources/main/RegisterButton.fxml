@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox prefHeight="200" prefWidth="200" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="RegisterButton">
+    <Button fx:id="register" onAction="#register" prefHeight="100" prefWidth="100" style="-fx-background-radius: 50%;      -fx-background-image: url(/Bilder/add.png);      -fx-background-size: 100%;      -fx-background-color: white;      -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.5, 3, 3);">
+        <cursor>
+            <Cursor fx:constant="HAND" />
+        </cursor></Button>
+</HBox>
