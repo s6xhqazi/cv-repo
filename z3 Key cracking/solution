@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+from z3 import *
+
+if __name__ == '__main__':
+    x = IntVector('x', 32)						#Initialize a Vector holding the 32 values
+    s = Solver()							# Initialize solver
+    for i in range(0, 32):						# Add constrains, the ints in the vector should be in given range 
+        s.add(Or(And(47 < x[i], x[i] <= 57), And(64 < x[i], x[i] <= 90), And(96 < x[i], x[i] <= 122)))
+        # following constraints after analysis
+    s.add(x[0] <= x[1] + 2)
+    s.add(x[1] <= x[2] + 2)
+    s.add(x[2] <= x[3] + 2)
+    s.add(x[3] < x[4] - 9)
+    s.add(x[4] < x[5] - 9)
+    s.add(x[5] < x[6] - 9)
+    s.add(x[6] <= x[7] + 5)
+    s.add(x[7] <= x[8] + 5)
+    s.add(x[8] <= x[9] + 5)
+    s.add(x[31] <= x[0] * 2)
+    s.add(x[30] <= x[1] * 2)
+    s.add(x[29] <= x[2] * 2)
+    ke = BitVec('k', 32)
+    for i in range(16, 31):
+        s.add(x[i] < x[i + 1])
+    # Constrains on the sum
+    s.add(Sum([ x[2+j] for j in range(16)]) % 2 == 1)
+    s.check()
+    
+    # Some formating
+    val = str((sorted ([(d, s.model()[d]) for d in s.model()], key = lambda x: int(str(x[0]).replace("x__","")))))
+    val = val[1:-1]
+    val = val.replace("(", " ")
+    val = val.replace(")", " ")
+    output = ''
+    for num in val.split():
+        if num.strip().isdigit():
+            output = output + chr(int(num))
+    # Output
+    print(output)
+

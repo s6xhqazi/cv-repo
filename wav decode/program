@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import wave
+import numpy
+
+
+def decode(path):
+    # Read the given data
+    wave1 = wave.open(path)
+    #Get the number of the samples
+    samples = wave1.getnframes()
+    # read smaples into binary
+    data= wave1.readframes(samples)
+    # Get the framerate
+    framerate = wave1.getframerate()
+    # Get the width of the channel
+    width = wave1.getsampwidth()
+    # Number of samples per byte encoded
+    sampleperbyte = int(framerate/10/width)
+
+    # Array in int values
+    audio_as_np_int16 = numpy.frombuffer(data, dtype=numpy.int16)
+    # Array in float values
+    audio_as_np_float32 = audio_as_np_int16.astype(numpy.float32)
+    # For normalisation purposes
+    max_int16 = 2 ** 15
+    # The normalized array
+    audio_normalised = audio_as_np_float32 / max_int16
+    # Split array in given intervals
+    audio_normalised = numpy.split(audio_normalised, samples / sampleperbyte)
+    # Decode the binary
+    binary = ""
+    for i in range(0, int(samples / sampleperbyte)):
+        # Categorize in 1 or 0 based on amplitude, with e threshold for mistakes
+        if numpy.sum(audio_normalised[i][100:sampleperbyte-100].max()) > 0.5:
+            binary = binary + '1'
+        else:
+            binary = binary + '0'
+    message = ""
+    # From binary to string
+    for i in range(0, int(len(binary)/8)):
+        message = message + binary2char(binary[8*i:8*i+8])
+    return message
+
+    # This methode takes a byte and reads its char value
+def binary2char(string):
+    sum = 0
+    for i in range (0,7):
+        sum = sum + int(string[7-i])*2**i
+    return chr(sum)
+
+    # To check the input given
+def file_path(string):
+    if os.path.exists(string):
+        return string
+    else:
+        raise FileNotFoundError(string)
+
+def debug(string):
+    print("DEBUG: ",  string)
+
+
+def solution(string):
+    print("SOLUTION: ",  string)
+
+if __name__ == '__main__':
+    #Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('module', type=str, help='The Module to be decoded. Only ASK supported')
+    parser.add_argument('path', type=file_path, help='The path to the file')
+    args = parser.parse_args()
+    if args.module != 'ASK':
+        #raise ValueError
+        debug("Invalid command")
+    #Decode
+    
+    solution(decode(args.path))
+

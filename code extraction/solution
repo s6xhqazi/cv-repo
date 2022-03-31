@@ -1,0 +1,10 @@
+#!/usr/bin/env python3
+
+import subprocess
+
+
+if __name__ == '__main__':
+    cm = "gdb -nx extractme -x code.py"
+    stdoutput = subprocess.run(cm ,capture_output=True, shell=True, text=True)	# run gdb with python script, capture output in stdout
+    print(stdoutput.stdout.splitlines()[-1])		# sanitize solution
+

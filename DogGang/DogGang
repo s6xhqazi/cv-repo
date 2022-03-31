@@ -1,0 +1,30 @@
+#!/bin/bash 
+
+if [ -n "$1" ]; then
+  echo "Welcome " $1
+else
+  echo "Dooouuuggg add your name like \"./DogGang name\""
+  exit -1
+fi
+
+FILE_CLIENT=client
+FILE_SERVER=server
+
+if [ ! -f "$FILE_CLIENT" ]; then			# check if the client binary exists. Doesn't check if it is correct
+    make client					# if not make it
+fi
+if [ ! -f "$FILE_SERVER" ]; then			# check if the server binary exists. Doesn't check if it is correct
+    make server					# if not make it
+fi
+echo Welcome to the Gang Bro! Give us some ID first
+echo Tell me your port first
+read port
+fuser -k $port/udp
+./server $port &
+echo Tell me the desired host
+read host
+echo Tell me your dogs port
+read port2
+
+./client $host $port2 
+
